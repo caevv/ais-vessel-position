@@ -2,7 +2,6 @@ package repository
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -10,61 +9,49 @@ import (
 	"sync"
 
 	"github.com/caevv/ais-vessel-position/data"
+	"github.com/pkg/errors"
 )
 
 type Vessel interface {
 	Positions(imo int) ([]*data.Position, error)
 }
 
-type VesselRepository struct{
+type VesselRepository struct {
 	filesPath string
+	filesName []string
 }
 
-func New(path string) Vessel {
+func New(path string, filesName []string) Vessel {
 	return &VesselRepository{
 		filesPath: path,
+		filesName: filesName,
 	}
 }
 
 func (r VesselRepository) Positions(imo int) ([]*data.Position, error) {
 	var (
-		wg                   sync.WaitGroup
-		positions            []*data.Position
-		position202007291231 *data.Position
-		position202007291931 *data.Position
-		position202007292331 *data.Position
-		errs                 []error
+		wg   sync.WaitGroup
+		errs []error
 	)
 
-	wg.Add(1)
-	go func() {
-		var err error
-		position202007291231, err = r.readFile("CombinedPositionsData_20200729_202007291231_CombinedPositionsData.json", imo)
-		if err != nil {
-			errs = append(errs, err)
-		}
-		wg.Done()
-	}()
+	filesQty := len(r.filesName)
+	positions := make([]*data.Position, filesQty)
 
-	wg.Add(1)
-	go func() {
-		var err error
-		position202007291931, err = r.readFile("CombinedPositionsData_20200729_202007291931_CombinedPositionsData.json", imo)
-		if err != nil {
-			errs = append(errs, err)
-		}
-		wg.Done()
-	}()
+	wg.Add(filesQty)
 
-	wg.Add(1)
-	go func() {
-		var err error
-		position202007292331, err = r.readFile("CombinedPositionsData_20200729_202007292331_CombinedPositionsData.json", imo)
-		if err != nil {
-			errs = append(errs, err)
-		}
-		wg.Done()
-	}()
+	for i, fileName := range r.filesName {
+		fileName := fileName
+		i := i
+		go func() {
+			position, err := r.readFile(fileName, imo)
+			if err != nil {
+				errs = append(errs, err)
+			} else {
+				positions[i] = position
+			}
+			wg.Done()
+		}()
+	}
 
 	wg.Wait()
 
@@ -76,13 +63,13 @@ func (r VesselRepository) Positions(imo int) ([]*data.Position, error) {
 		return nil, errors.New(errorMessage)
 	}
 
-	return append(positions, position202007291231, position202007291931, position202007292331), nil
+	return positions, nil
 }
 
 func (r VesselRepository) readFile(fileName string, imo int) (*data.Position, error) {
 	jsonFile, err := os.Open(fmt.Sprintf("%s%s", r.filesPath, fileName))
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed to open file")
 	}
 
 	defer func() {
@@ -94,14 +81,14 @@ func (r VesselRepository) readFile(fileName string, imo int) (*data.Position, er
 
 	byteValue, err := ioutil.ReadAll(jsonFile)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed to read json file")
 	}
 
 	var positions []data.Position
 
 	err = json.Unmarshal(byteValue, &positions)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed to deserialize json")
 	}
 
 	for _, position := range positions {

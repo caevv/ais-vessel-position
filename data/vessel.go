@@ -2,12 +2,14 @@ package data
 
 import (
 	"math"
+	"time"
 )
 
 type Position struct {
-	Imo       int     `json:"IMO"`
-	Latitude  float64 `json:"Latitude"`
-	Longitude float64 `json:"Longitude"`
+	Imo              int       `json:"IMO"`
+	Latitude         float64   `json:"Latitude"`
+	Longitude        float64   `json:"Longitude"`
+	MovementDateTime time.Time `json:"MovementDateTime"`
 }
 
 type Distance struct {

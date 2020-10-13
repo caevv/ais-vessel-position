@@ -7,6 +7,7 @@ import (
 type Config struct {
 	RepositoryJsonPath string
 	Port               int
+	Files              []string
 }
 
 func New() *Config {
@@ -17,5 +18,6 @@ func New() *Config {
 	return &Config{
 		RepositoryJsonPath: viper.GetString("JSON_FILES_PATH"),
 		Port:               viper.GetInt("PORT"),
+		Files:              viper.GetStringSlice("JSON_FILES"),
 	}
 }

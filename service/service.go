@@ -29,13 +29,17 @@ func New(config *env.Config) *Application {
 	return app
 }
 
-func (a *Application) Start() {
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", a.config.Port), a.Router))
+func (app *Application) Start() {
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", app.config.Port), app.Router))
 }
 
 func (app *Application) GetVesselPosition(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	w.WriteHeader(http.StatusOK)
+
+	if _, ok := vars["imo"]; !ok {
+		respondError(w, errors.New("missing vessel IMO "))
+	}
 
 	imo, err := strconv.Atoi(vars["imo"])
 	if err != nil {
@@ -43,7 +47,7 @@ func (app *Application) GetVesselPosition(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	vesselRepository := repository.New(app.config.RepositoryJsonPath)
+	vesselRepository := repository.New(app.config.RepositoryJsonPath, app.config.Files)
 
 	positions, err := vesselRepository.Positions(imo)
 	if err != nil {
@@ -64,8 +68,8 @@ func (app *Application) GetVesselPosition(w http.ResponseWriter, r *http.Request
 }
 
 func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
-	w.WriteHeader(code)
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
 
 	err := json.NewEncoder(w).Encode(payload)
 	if err != nil {

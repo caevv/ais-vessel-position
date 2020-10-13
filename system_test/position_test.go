@@ -14,7 +14,8 @@ import (
 func TestGetDistance(t *testing.T) {
 	apitest.New().
 		Handler(service.New(&env.Config{
-			RepositoryJsonPath: "../repository/data/",
+			RepositoryJsonPath: "data/",
+			Files: []string{"202007291231.json", "202007291931.json", "202007292331.json"},
 		}).Router).
 		Get("/vessel/position/1000710").
 		Expect(t).
@@ -31,10 +32,9 @@ func TestGetDistance(t *testing.T) {
 
 func TestError(t *testing.T) {
 	apitest.New().
-		Handler(service.New(&env.Config{}).Router).
+		Handler(service.New(&env.Config{Files: []string{"non-existent-file"}}).Router).
 		Get("/vessel/position/1000710").
 		Expect(t).
-		Assert(jsonpath.Contains(`$.error`, "such file or directory")).
-		Status(http.StatusOK).
+		Assert(jsonpath.Contains(`$.error`, "no such file or directory")).
 		End()
 }
