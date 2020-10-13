@@ -20,11 +20,11 @@ func TestVesselRepository_Positions(t *testing.T) {
 
 	movementTime, err := time.Parse(time.RFC3339, "2006-01-02T15:04:05Z")
 	assert.NoError(t, err)
-	writeFile(t, appFs, filePath, file[0], movementTime)
+	writeFile(t, appFs, filePath, file[0], movementTime.Add(time.Hour)) // This will test the ordering
 
 	movementTime2, err := time.Parse(time.RFC3339, "2006-01-02T15:04:05Z")
 	assert.NoError(t, err)
-	writeFile(t, appFs, filePath, file[1], movementTime2.Add(time.Second))
+	writeFile(t, appFs, filePath, file[1], movementTime2)
 
 	// test
 	r := New(filePath, file)
@@ -44,7 +44,7 @@ func TestVesselRepository_Positions(t *testing.T) {
 				Imo:              1,
 				Latitude:         1,
 				Longitude:        1,
-				MovementDateTime: movementTime2.Add(time.Second),
+				MovementDateTime: movementTime2.Add(time.Hour),
 			},
 		},
 		actualPositions,

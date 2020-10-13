@@ -65,7 +65,7 @@ func (r VesselRepository) Positions(imo int) ([]*data.Position, error) {
 		return nil, errors.New(errorMessage)
 	}
 
-	// Positions should be ordered, but will assume worst case scenario in case json files were not ordered.
+	// Positions should be ordered, but we will assume worst case scenario in case json files were not ordered.
 	sort.Slice(positions, func(i, j int) bool {
 		return positions[i].MovementDateTime.Before(positions[j].MovementDateTime)
 	})
