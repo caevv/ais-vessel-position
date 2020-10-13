@@ -35,10 +35,10 @@ func (app *Application) Start() {
 
 func (app *Application) GetVesselPosition(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	w.WriteHeader(http.StatusOK)
 
 	if _, ok := vars["imo"]; !ok {
 		respondError(w, errors.New("missing vessel IMO "))
+		return
 	}
 
 	imo, err := strconv.Atoi(vars["imo"])
@@ -59,7 +59,7 @@ func (app *Application) GetVesselPosition(w http.ResponseWriter, r *http.Request
 
 	respondWithJSON(
 		w,
-		http.StatusCreated,
+		http.StatusOK,
 		map[string]float64{
 			"statuteMiles":  distance.StatuteMiles,
 			"kilometers":    distance.Kilometer,

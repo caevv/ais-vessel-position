@@ -36,5 +36,6 @@ func TestError(t *testing.T) {
 		Get("/vessel/position/1000710").
 		Expect(t).
 		Assert(jsonpath.Contains(`$.error`, "no such file or directory")).
+		Status(http.StatusBadRequest).
 		End()
 }
