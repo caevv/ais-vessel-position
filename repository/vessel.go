@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"sort"
 	"sync"
 
 	"github.com/caevv/ais-vessel-position/data"
@@ -47,6 +48,7 @@ func (r VesselRepository) Positions(imo int) ([]*data.Position, error) {
 			if err != nil {
 				errs = append(errs, err)
 			} else {
+				// ensure order
 				positions[i] = position
 			}
 			wg.Done()
@@ -62,6 +64,11 @@ func (r VesselRepository) Positions(imo int) ([]*data.Position, error) {
 		}
 		return nil, errors.New(errorMessage)
 	}
+
+	// Positions should be ordered, but will assume worst case scenario in case json files were not ordered.
+	sort.Slice(positions, func(i, j int) bool {
+		return positions[i].MovementDateTime.Before(positions[j].MovementDateTime)
+	})
 
 	return positions, nil
 }

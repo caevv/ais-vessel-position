@@ -18,15 +18,16 @@ type Distance struct {
 	StatuteMiles  float64
 }
 
+// Domain logic resides alongside the domain object
 func CalculateDistance(positions []*Position) Distance {
 	var distance Distance
 
 	for i := 0; i < len(positions); i++ {
-		if i == len(positions)-1 {
+		if isLast(positions, i) {
 			return distance
 		}
 
-		d := calculate(positions[i].Latitude, positions[i].Longitude, positions[i+1].Latitude, positions[i+1].Longitude)
+		d := formula(positions[i].Latitude, positions[i].Longitude, positions[i+1].Latitude, positions[i+1].Longitude)
 		distance.Kilometer += d.Kilometer
 		distance.NauticalMiles += d.NauticalMiles
 		distance.StatuteMiles += d.StatuteMiles
@@ -36,7 +37,7 @@ func CalculateDistance(positions []*Position) Distance {
 }
 
 // This routine calculates the distance between two points (given the latitude/longitude of those points), by GeoDataSource (TM) products.
-func calculate(lat1 float64, lng1 float64, lat2 float64, lng2 float64) Distance {
+func formula(lat1 float64, lng1 float64, lat2 float64, lng2 float64) Distance {
 	const PI float64 = 3.141592653589793
 
 	radLat1 := PI * lat1 / 180
@@ -60,4 +61,8 @@ func calculate(lat1 float64, lng1 float64, lat2 float64, lng2 float64) Distance 
 		NauticalMiles: dist * 0.8684,
 		StatuteMiles:  dist,
 	}
+}
+
+func isLast(positions []*Position, i int) bool {
+	return i == len(positions)-1
 }

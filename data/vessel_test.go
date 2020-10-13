@@ -13,7 +13,7 @@ func TestCalculate(t *testing.T) {
 			NauticalMiles: 26.281689399277507,
 			StatuteMiles:  30.264497235464656,
 		},
-		calculate(38.643582, 15.12622, 38.554115, 14.57754),
+		formula(38.643582, 15.12622, 38.554115, 14.57754),
 	)
 }
 
