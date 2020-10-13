@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCalculate(t *testing.T) {
+func TestFormula(t *testing.T) {
 	assert.Equal(t,
 		Distance{
 			Kilometer:     48.70598703891164,
