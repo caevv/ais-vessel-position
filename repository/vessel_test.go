@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/caevv/ais-vessel-position/data"
+	"github.com/caevv/ais-vessel-position/domain"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 )
@@ -33,7 +33,7 @@ func TestVesselRepository_Positions(t *testing.T) {
 
 	assert.Equal(
 		t,
-		[]*data.Position{
+		[]*domain.Position{
 			{
 				Imo:              1,
 				Latitude:         1,
@@ -55,7 +55,7 @@ func TestVesselRepository_Positions(t *testing.T) {
 }
 
 func writeFile(t *testing.T, appFs afero.Fs, filePath string, fileName string, movementTime time.Time) {
-	jsonString, err := json.Marshal([]*data.Position{
+	jsonString, err := json.Marshal([]*domain.Position{
 		{
 			Imo:              1,
 			Latitude:         1,

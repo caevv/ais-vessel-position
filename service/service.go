@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/caevv/ais-vessel-position/data"
+	"github.com/caevv/ais-vessel-position/domain"
 	"github.com/caevv/ais-vessel-position/env"
 	"github.com/caevv/ais-vessel-position/repository"
 	"github.com/gorilla/mux"
@@ -55,7 +55,7 @@ func (app *Application) GetVesselPosition(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	distance := data.CalculateDistance(positions)
+	distance := domain.CalculateDistance(positions)
 
 	respondWithJSON(
 		w,
