@@ -6,5 +6,12 @@ jobs:
 
     steps:
       - checkout
-      - run: make deps
-      - run: make test
+      - run:
+          name: Install dependencies
+          command: make deps
+      - run:
+          name: Run lint
+          command: make lint
+      - run:
+          name: Run tests
+          command: make test
