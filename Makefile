@@ -5,7 +5,7 @@ all: deps lint build test
 
 .PHONY: deps
 deps:
-	go mod tidy
+	go mod download
 
 .PHONY: build
 build:
