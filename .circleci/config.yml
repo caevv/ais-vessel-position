@@ -1,8 +1,5 @@
 version: 2.1
 
-orbs:
-  golangci: ory/golangci@0.0.9
-
 jobs:
   build:
     docker:
