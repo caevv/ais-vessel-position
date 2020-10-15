@@ -6,14 +6,14 @@ import (
 	"testing"
 
 	"github.com/caevv/ais-vessel-position/env"
-	"github.com/caevv/ais-vessel-position/service"
+	"github.com/caevv/ais-vessel-position/api"
 	"github.com/steinfletcher/apitest"
 	"github.com/steinfletcher/apitest-jsonpath"
 )
 
 func TestGetDistance(t *testing.T) {
 	apitest.New().
-		Handler(service.New(&env.Config{
+		Handler(api.New(&env.Config{
 			RepositoryJsonPath: "data/",
 			Files: []string{"202007291231.json", "202007291931.json", "202007292331.json"},
 		}).Router).
@@ -32,7 +32,7 @@ func TestGetDistance(t *testing.T) {
 
 func TestError(t *testing.T) {
 	apitest.New().
-		Handler(service.New(&env.Config{Files: []string{"non-existent-file"}}).Router).
+		Handler(api.New(&env.Config{Files: []string{"non-existent-file"}}).Router).
 		Get("/vessel/position/1000710").
 		Expect(t).
 		Assert(jsonpath.Contains(`$.error`, "no such file or directory")).

@@ -5,7 +5,7 @@ import (
 	"runtime/debug"
 
 	"github.com/caevv/ais-vessel-position/env"
-	"github.com/caevv/ais-vessel-position/service"
+	"github.com/caevv/ais-vessel-position/api"
 )
 
 func main() {
@@ -15,6 +15,6 @@ func main() {
 		}
 	}()
 
-	app := service.New(env.New())
+	app := api.New(env.New())
 	app.Start()
 }
