@@ -8,7 +8,7 @@ import (
 	"strconv"
 
 	"github.com/caevv/ais-vessel-position/domain"
-	"github.com/caevv/ais-vessel-position/env"
+	"github.com/caevv/ais-vessel-position/configs"
 	"github.com/caevv/ais-vessel-position/repository"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
@@ -16,10 +16,10 @@ import (
 
 type Application struct {
 	Router *mux.Router
-	config *env.Config
+	config *configs.Config
 }
 
-func New(config *env.Config) *Application {
+func New(config *configs.Config) *Application {
 	router := mux.NewRouter()
 
 	app := &Application{Router: router, config: config}
