@@ -1,0 +1,10 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:1.15
+
+    steps:
+      - checkout
+      - run: make deps
+      - run: make test
