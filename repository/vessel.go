@@ -13,6 +13,8 @@ import (
 	"github.com/pkg/errors"
 )
 
+const maxRoutines = 2
+
 type Vessel interface {
 	Positions(imo int) ([]*data.Position, error)
 }
@@ -35,24 +37,27 @@ func (r VesselRepository) Positions(imo int) ([]*data.Position, error) {
 		errs []error
 	)
 
+	sem := make(chan struct{}, maxRoutines)
+
 	filesQty := len(r.filesName)
 	positions := make([]*data.Position, filesQty)
 
 	wg.Add(filesQty)
 
 	for i, fileName := range r.filesName {
-		fileName := fileName
-		i := i
-		go func() {
+		sem <- struct{}{} // add to the goroutine and block if full
+
+		go func(fileName string, i int) {
+			defer func() { <-sem }() // decrement from goroutine
+
 			position, err := r.readFile(fileName, imo)
 			if err != nil {
 				errs = append(errs, err)
 			} else {
-				// ensure order
-				positions[i] = position
+				positions[i] = position // ensure order
 			}
 			wg.Done()
-		}()
+		}(fileName, i)
 	}
 
 	wg.Wait()
