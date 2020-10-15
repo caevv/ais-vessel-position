@@ -1,4 +1,4 @@
-# AIS Vessel Position
+# Vessel Distance Calculator
 
 Calculate vessel position for a given vessel IMO based on the latitude and longitude of the vessel rota.
 
@@ -10,5 +10,3 @@ Calculate vessel position for a given vessel IMO based on the latitude and longi
 - Tests: `make test`
 - Build: `make build`
 - Lint: `make lint`
-
-See more on `Makefile`
