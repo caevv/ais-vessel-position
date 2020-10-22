@@ -1,4 +1,4 @@
-package domain
+package aisvesselposition
 
 import (
 	"testing"

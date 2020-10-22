@@ -3,20 +3,20 @@ package repository
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/caevv/ais-vessel-position/pkg/aisvesselposition"
 	"io/ioutil"
 	"log"
 	"os"
 	"sort"
 	"sync"
 
-	"github.com/caevv/ais-vessel-position/domain"
 	"github.com/pkg/errors"
 )
 
 const maxRoutines = 2
 
 type Vessel interface {
-	Positions(imo int) ([]*domain.Position, error)
+	Positions(imo int) ([]*aisvesselposition.Position, error)
 }
 
 type VesselRepository struct {
@@ -31,7 +31,7 @@ func New(path string, filesName []string) Vessel {
 	}
 }
 
-func (r VesselRepository) Positions(imo int) ([]*domain.Position, error) {
+func (r VesselRepository) Positions(imo int) ([]*aisvesselposition.Position, error) {
 	var (
 		wg   sync.WaitGroup
 		errs []error
@@ -40,7 +40,7 @@ func (r VesselRepository) Positions(imo int) ([]*domain.Position, error) {
 	sem := make(chan struct{}, maxRoutines)
 
 	filesQty := len(r.filesName)
-	positions := make([]*domain.Position, filesQty)
+	positions := make([]*aisvesselposition.Position, filesQty)
 
 	wg.Add(filesQty)
 
@@ -78,7 +78,7 @@ func (r VesselRepository) Positions(imo int) ([]*domain.Position, error) {
 	return positions, nil
 }
 
-func (r VesselRepository) readFile(fileName string, imo int) (*domain.Position, error) {
+func (r VesselRepository) readFile(fileName string, imo int) (*aisvesselposition.Position, error) {
 	jsonFile, err := os.Open(fmt.Sprintf("%s%s", r.filesPath, fileName))
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to open file")
@@ -96,7 +96,7 @@ func (r VesselRepository) readFile(fileName string, imo int) (*domain.Position, 
 		return nil, errors.Wrap(err, "failed to read json file")
 	}
 
-	var positions []domain.Position
+	var positions []aisvesselposition.Position
 
 	err = json.Unmarshal(byteValue, &positions)
 	if err != nil {

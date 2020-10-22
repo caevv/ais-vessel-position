@@ -2,10 +2,11 @@ package repository
 
 import (
 	"encoding/json"
+	"github.com/caevv/ais-vessel-position/pkg/aisvesselposition"
+	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
 
-	"github.com/caevv/ais-vessel-position/domain"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 )
@@ -16,14 +17,14 @@ func TestVesselRepository_Positions(t *testing.T) {
 	file := []string{"a.json", "b.json"}
 	appFs := afero.NewOsFs()
 	err := appFs.Mkdir(filePath, 0755)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	movementTime, err := time.Parse(time.RFC3339, "2006-01-02T15:04:05Z")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	writeFile(t, appFs, filePath, file[0], movementTime.Add(time.Hour)) // This will test the ordering
 
 	movementTime2, err := time.Parse(time.RFC3339, "2006-01-02T15:04:05Z")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	writeFile(t, appFs, filePath, file[1], movementTime2)
 
 	// test
@@ -33,7 +34,7 @@ func TestVesselRepository_Positions(t *testing.T) {
 
 	assert.Equal(
 		t,
-		[]*domain.Position{
+		[]*aisvesselposition.Position{
 			{
 				Imo:              1,
 				Latitude:         1,
@@ -55,7 +56,7 @@ func TestVesselRepository_Positions(t *testing.T) {
 }
 
 func writeFile(t *testing.T, appFs afero.Fs, filePath string, fileName string, movementTime time.Time) {
-	jsonString, err := json.Marshal([]*domain.Position{
+	jsonString, err := json.Marshal([]*aisvesselposition.Position{
 		{
 			Imo:              1,
 			Latitude:         1,
@@ -63,7 +64,7 @@ func writeFile(t *testing.T, appFs afero.Fs, filePath string, fileName string, m
 			MovementDateTime: movementTime,
 		},
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	err = afero.WriteFile(appFs, filePath+fileName, jsonString, 0644)
 	assert.NoError(t, err)
